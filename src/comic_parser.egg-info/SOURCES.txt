@@ -1,0 +1,7 @@
+README.md
+pyproject.toml
+src/comic-parser/comic-parser.py
+src/comic_parser.egg-info/PKG-INFO
+src/comic_parser.egg-info/SOURCES.txt
+src/comic_parser.egg-info/dependency_links.txt
+src/comic_parser.egg-info/top_level.txt

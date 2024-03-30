@@ -1,6 +1,0 @@
-pyproject.toml
-src/comicBuilder/comicBuilder.py
-src/comicBuilder.egg-info/PKG-INFO
-src/comicBuilder.egg-info/SOURCES.txt
-src/comicBuilder.egg-info/dependency_links.txt
-src/comicBuilder.egg-info/top_level.txt
