@@ -5,17 +5,20 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "comic-parser"
 version = "0.0.1"
-authors = [
-  { name="Pablo"},
-]
+authors = [{name="Pablo Alvarez Lopez"}]
 description = "Python utility for build comics"
 readme = "README.md"
+license = {file = "LICENSE.txt"}
+keywords = ["pdf", "comic", "manga"]
 requires-python = ">=3.8"
 classifiers = [
+    # Python version
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+
+    # Operating system
     "Operating System :: OS Independent",
 ]
 
 [project.urls]
 Homepage = "https://github.com/palvarezlopez/comic-parser"
+Issues = "https://github.com/palvarezlopez/comic-parser/issues"
