@@ -1,6 +1,7 @@
 import os
 import img2pdf
 from PIL import Image
+from . import parser
 
 for pathRoot, subdirsRoot, filesRoot in os.walk('./'):
     for dirNames in subdirsRoot:
@@ -15,3 +16,7 @@ for pathRoot, subdirsRoot, filesRoot in os.walk('./'):
 
         with open(os.path.basename(os.getcwd() + dirNames) + ".pdf", "wb") as manga:
             manga.write(img2pdf.convert(imagenes))
+
+
+if __name__ == '__main__':
+    parser()

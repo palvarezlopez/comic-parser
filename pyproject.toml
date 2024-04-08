@@ -24,4 +24,4 @@ Homepage = "https://github.com/palvarezlopez/comic-parser"
 Issues = "https://github.com/palvarezlopez/comic-parser/issues"
 
 [project.scripts]
-comic-parser = "timmins:comic_Parser"
+comic-parser = "comicParser:parser"

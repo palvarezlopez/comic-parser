@@ -1,2 +1,2 @@
-def comic_Parser():
+def parser():
     print("Test comicParser")
