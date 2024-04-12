@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "img2pdf", "pillow"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -24,4 +24,4 @@ Homepage = "https://github.com/palvarezlopez/comic-parser"
 Issues = "https://github.com/palvarezlopez/comic-parser/issues"
 
 [project.scripts]
-comic-parser = "comicParser:parser"
+comic-parser = "comicParser:runParser"
