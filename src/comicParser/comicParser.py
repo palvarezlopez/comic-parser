@@ -1,22 +1,23 @@
 import os
 import img2pdf
 from PIL import Image
-from . import parser
 
-for pathRoot, subdirsRoot, filesRoot in os.walk('./'):
-    for dirNames in subdirsRoot:
-        imagenes = []
+# comic parser
+class ComicParser:
 
-        for path, subdirs, files in os.walk(dirNames):
-            for name in files:
-                if ".py" not in name and ".pdf" not in name and ".db" not in name:
-                    imagenes.append(os.path.join(path, name))
+    # init method or constructor
+    def __init__(self, parameters):
+        print (parameters)
+        for pathRoot, subdirsRoot, filesRoot in os.walk('./'):
+            for dirNames in subdirsRoot:
+                imagenes = []
 
-        imagenes.sort()
+                for path, subdirs, files in os.walk(dirNames):
+                    for name in files:
+                        if ".py" not in name and ".pdf" not in name and ".db" not in name:
+                            imagenes.append(os.path.join(path, name))
 
-        with open(os.path.basename(os.getcwd() + dirNames) + ".pdf", "wb") as manga:
-            manga.write(img2pdf.convert(imagenes))
+                imagenes.sort()
 
-
-if __name__ == '__main__':
-    parser()
+                with open(os.path.basename(os.getcwd() + dirNames) + ".pdf", "wb") as manga:
+                    manga.write(img2pdf.convert(imagenes))
