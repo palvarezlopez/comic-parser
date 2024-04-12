@@ -1,2 +1,2 @@
 [console_scripts]
-comic-parser = comicParser:parser
+comic-parser = comicParser:runParser
