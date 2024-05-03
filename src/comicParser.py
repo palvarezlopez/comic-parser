@@ -19,7 +19,7 @@ class ComicParser:
             # comic author
             author = sys.argv[3]
             # extract all files
-            #self.extractFiles(comicFolder)
+            self.extractFiles(folder)
             # build PDFs
             self.buildPDFs(folder, title, author)
 
