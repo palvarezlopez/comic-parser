@@ -24,7 +24,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 if __name__ == "__main__":
     setup(
         name = "comic-parser",
-        version = "0.3",
+        version = "1.0",
         maintainer = "",
         maintainer_email = "",
         author = "Pablo Alvarez Lopez",
