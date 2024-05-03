@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "comicParser", "comicParser/comicParser.pyproj", "{9172D015-6DF7-4E3B-8526-DC67A33454E3}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "comic-parser", "src\comic-parser.pyproj", "{9172D015-6DF7-4E3B-8526-DC67A33454E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

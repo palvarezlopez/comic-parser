@@ -33,7 +33,7 @@ if __name__ == "__main__":
         keywords = ["comic", "pdf"],
         long_description = long_description,
         platforms = ["Linux", "Mac OSX", "Windows", "Unix"],
-        packages = find_packages("comicParser", exclude=["comic_parser.egg-info", ".git", ".vs"]),
+        packages = find_packages("src", exclude=["comic_parser.egg-info", ".git", ".vs"]),
         url = "",
         project_urls = project_urls,
         classifiers = classifiers,
