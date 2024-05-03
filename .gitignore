@@ -3,5 +3,5 @@
 
 *.pyc
 *.pdf
-/src/comic_parser.egg-info
+/comic_parser.egg-info
 /dist
