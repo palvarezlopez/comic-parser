@@ -2,7 +2,7 @@ import sys
 from setuptools import setup, find_packages
 
 if sys.version_info[:2] < (3, 8):
-    sys.stderr.write(f'foodwebviz requires Python 3.8 or later ({sys.version_info[:2]} detected).\n')
+    sys.stderr.write(f'comic-parser requires Python 3.8 or later ({sys.version_info[:2]} detected).\n')
     sys.exit(1)
 
 project_urls = {
@@ -40,4 +40,5 @@ if __name__ == "__main__":
         install_requires = ["img2pdf", "pillow"],
         python_requires = ">=3.7",
         zip_safe = False,
+        entry_points = {"console_scripts": [ "comic-parser = comicParser:runParser"]}
     )
