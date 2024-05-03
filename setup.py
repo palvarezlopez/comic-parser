@@ -1,10 +1,9 @@
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
 if sys.version_info[:2] < (3, 8):
     sys.stderr.write(f'foodwebviz requires Python 3.8 or later ({sys.version_info[:2]} detected).\n')
     sys.exit(1)
-
 
 project_urls = {
     "Bug Tracker": "https://github.com/palvarezlopez/comic-parser/issues",
@@ -34,7 +33,7 @@ if __name__ == "__main__":
         keywords = ["comic", "pdf"],
         long_description = long_description,
         platforms = ["Linux", "Mac OSX", "Windows", "Unix"],
-        packages = "comicParser",
+        packages = find_packages("comicParser", exclude=["comic_parser.egg-info", ".git", ".vs"]),
         url = "",
         project_urls = project_urls,
         classifiers = classifiers,
