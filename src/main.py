@@ -1,5 +1,5 @@
 import sys
 import comicParser
 
-# create instance of comic parser    
+# create instance of comic parser
 comicParser.ComicParser()

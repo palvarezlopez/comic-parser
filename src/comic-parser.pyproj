@@ -12,7 +12,7 @@
     <Name>comic-parser</Name>
     <RootNamespace>comic-parser</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>C:\Users\Palcraft\Downloads\JDownloader\Mangas\GuerraMundos "La guerra de los mundos"</CommandLineArguments>
+    <CommandLineArguments>C:\Users\Palcraft\Downloads\JDownloader\Mangas\GuerraMundos "La guerra de los mundos" "test"</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
