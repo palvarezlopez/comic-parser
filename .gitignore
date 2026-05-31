@@ -1,7 +1,9 @@
 .vs
 .venv
-comic_parser.egg-info
+build
 dist
+*.egg-info
+__pycache__/
 
 *.pyc
 *.pdf

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comic-parser"
+version = "1.0"
+description = "Python utility for build comics"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Pablo Alvarez Lopez" }
+]
+keywords = ["comic", "pdf"]
+dependencies = ["img2pdf", "pillow"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/palvarezlopez/comic-parser/issues"
+Documentation = "https://github.com/palvarezlopez/comic-parser"
+"Source Code" = "https://github.com/palvarezlopez/comic-parser"
+
+[project.scripts]
+comic-parser = "comic_parser:runParser"
+
+[tool.setuptools.packages.find]
+where = ["src"]
