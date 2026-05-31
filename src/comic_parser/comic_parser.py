@@ -59,7 +59,7 @@ class ComicParser:
             pdfName = name + " " + self.getComicIndex() + " - " + author + ".pdf"
             # print info
             print("Parsing: " + pdfName)
-            # make pdf with i mages
+            # make pdf with images
             with open(folder + "/" + pdfName, "wb") as manga:
                 manga.write(img2pdf.convert(self.images))
             # update comic index

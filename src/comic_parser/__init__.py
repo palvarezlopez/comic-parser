@@ -1,5 +1,5 @@
-from . import comic_parser
+from .comic_parser import ComicParser
 
 
 def runParser():
-    comic_parser.ComicParser()
+    ComicParser()
