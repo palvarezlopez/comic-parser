@@ -2,26 +2,85 @@ import os
 import sys
 import img2pdf
 import zipfile
-from PIL import Image
+from datetime import datetime
 
 # comic parser
 class ComicParser:
 
+    # declare list of valid extensions
+    allowedExtensions = [".png", ".jpg", ".jpeg", ".tiff", ".bmp"]
+
     # init method or constructor
-    def __init__(self):
-        if (len(sys.argv) != 4):
-            print ("format 'folder' 'comic name' 'author name'")
-        else:
-            # comic folder
-            folder = sys.argv[1]
-            # comic title
-            title = sys.argv[2]
-            # comic author
-            author = sys.argv[3]
-            # extract all files
-            self.extractFiles(folder)
-            # build PDFs
-            self.buildPDFs(folder, title, author)
+    def __init__(self, argv=None):
+        self.index = 1
+        self.images = []
+
+        if argv is None:
+            argv = sys.argv[1:]
+
+        args = self.parseArguments(argv)
+        if args is None:
+            return
+
+        # extract all files
+        self.extractFiles(args["folder"])
+        # build PDFs
+        self.buildPDFs(
+            args["folder"],
+            args["title"],
+            args["author"],
+            args["subject"],
+            args["keywords"],
+            args["publisher"],
+            args["series"],
+        )
+
+    def parseArguments(self, argv):
+        if (len(argv) == 0 or "-h" in argv or "--help" in argv):
+            self.printUsage()
+            return None
+
+        if (len(argv) < 3):
+            print("format 'folder' 'comic name' 'author name'")
+            self.printUsage()
+            return None
+
+        args = {
+            "folder": argv[0],
+            "title": argv[1],
+            "author": argv[2],
+            "subject": None,
+            "keywords": None,
+            "publisher": None,
+            "series": None
+        }
+
+        optionalMapping = {
+            "--subject": "subject",
+            "--keywords": "keywords",
+            "--publisher": "publisher",
+            "--series": "series"
+        }
+
+        position = 3
+        while position < len(argv):
+            option = argv[position]
+            if option not in optionalMapping:
+                print("Unknown option: " + option)
+                self.printUsage()
+                return None
+            if (position + 1) >= len(argv):
+                print("Missing value for option: " + option)
+                self.printUsage()
+                return None
+            args[optionalMapping[option]] = argv[position + 1]
+            position += 2
+
+        return args
+
+    def printUsage(self):
+        print("Usage:")
+        print("comic-parser <folder> \"<comic name>\" \"<author>\" [--subject \"<subject>\"] [--keywords \"<k1,k2>\"] [--publisher \"<publisher>\"] [--series \"<series>\"]")
 
     # extract files
     def extractFiles(self, folder: str):
@@ -44,7 +103,7 @@ class ComicParser:
                         zip_ref.extractall(folder + "/" + fileWithoutExtension)
 
     # build PDF
-    def buildPDFs(self, folder: str, name: str, author: str):
+    def buildPDFs(self, folder: str, name: str, author: str, subject: str = None, keywords: str = None, publisher: str = None, series: str = None):
         # read all folders from comicFolder
         comicFolders = self.listFolders(folder)
         # iterate over all comic folders
@@ -55,15 +114,81 @@ class ComicParser:
             self.listImagesRecursive(comicFolder)
             # sort images
             self.images.sort()
+            # calculate chapter / volume index
+            comicIndex = self.getComicIndex()
             # declare pdf name
-            pdfName = name + " " + self.getComicIndex() + " - " + author + ".pdf"
+            pdfName = name + " " + comicIndex + " - " + author + ".pdf"
             # print info
             print("Parsing: " + pdfName)
             # make pdf with images
             with open(folder + "/" + pdfName, "wb") as manga:
-                manga.write(img2pdf.convert(self.images))
+                manga.write(self.buildPDF(self.images, self.buildPdfMetadata(name, author, comicIndex, subject, keywords, publisher, series)))
             # update comic index
             self.index += 1
+
+    def buildPdfMetadata(self, name: str, author: str, comicIndex: str, subject: str = None, keywords: str = None, publisher: str = None, series: str = None):
+        now = datetime.now()
+
+        finalSubjectParts = []
+        if subject:
+            finalSubjectParts.append(subject)
+        finalSubjectParts.append("Chapter/Volume " + comicIndex)
+        if series:
+            finalSubjectParts.append("Series: " + series)
+        if publisher:
+            finalSubjectParts.append("Publisher: " + publisher)
+
+        finalKeywords = []
+        if keywords:
+            finalKeywords.extend([value.strip() for value in keywords.split(",") if value.strip()])
+        finalKeywords.append("chapter-" + comicIndex)
+        if series:
+            finalKeywords.append(series)
+        if publisher:
+            finalKeywords.append(publisher)
+
+        return {
+            "title": name + " " + comicIndex,
+            "author": author,
+            "creationdate": now,
+            "moddate": now,
+            "subject": " | ".join(finalSubjectParts),
+            "keywords": finalKeywords,
+            "creator": "comic-parser",
+            "producer": "comic-parser"
+        }
+
+    def buildPDF(self, images, metadata):
+        try:
+            return img2pdf.convert(images, **metadata)
+        except TypeError as error:
+            if "unexpected keyword argument" not in str(error):
+                raise
+
+        safeKeysOrder = [
+            "title",
+            "author",
+            "creationdate",
+            "moddate",
+            "subject",
+            "keywords",
+            "creator",
+            "producer"
+        ]
+
+        safeMetadata = {}
+        for key in safeKeysOrder:
+            try:
+                safeMetadata[key] = metadata[key]
+                img2pdf.convert(images, **safeMetadata)
+            except TypeError as error:
+                if "unexpected keyword argument" not in str(error):
+                    raise
+                safeMetadata.pop(key, None)
+
+        if len(safeMetadata) > 0:
+            return img2pdf.convert(images, **safeMetadata)
+        return img2pdf.convert(images)
 
     # calculate comic index
     def getComicIndex(self) -> str:
@@ -92,12 +217,3 @@ class ComicParser:
                 self.listImagesRecursive(fullPath)
             else:
                 self.images.append(fullPath)
-
-    # declare list of valid extensions
-    allowedExtensions = [".png", ".jpg", ".jpeg", ".tiff", ".bmp"]
-
-    # comic index
-    index = 1
-
-    # declare image vector
-    images = []
