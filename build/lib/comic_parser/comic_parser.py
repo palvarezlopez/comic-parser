@@ -84,7 +84,7 @@ class ComicParser:
 
     # build metadata for PDF
     def buildPdfMetadata(self, name: str, author: str, comicIndex: str):
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(datetime.timezone.utc)
         return {
             "title": name + " " + comicIndex,
             "author": author,
@@ -98,21 +98,17 @@ class ComicParser:
 
     # build PDF bytes and fallback if some metadata keys are unsupported
     def buildPdfBytes(self, images, metadata):
-        metadataToUse = dict(metadata)
-        while True:
+        metadataKeys = ["keywords", "subject", "producer", "creator", "moddate", "creationdate", "author", "title"]
+        for removedKeys in range(0, len(metadataKeys) + 1):
+            metadataToUse = dict(metadata)
+            for key in metadataKeys[:removedKeys]:
+                if (key in metadataToUse):
+                    del metadataToUse[key]
             try:
                 return img2pdf.convert(images, **metadataToUse)
-            except TypeError as ex:
-                message = str(ex)
-                if ("unexpected keyword argument" in message):
-                    key = message.split("'")[1]
-                    if (key in metadataToUse):
-                        del metadataToUse[key]
-                        continue
-                if (len(metadataToUse) > 0):
-                    metadataToUse = {}
-                    continue
-                raise
+            except TypeError:
+                continue
+        return img2pdf.convert(images)
 
     # calculate comic index
     def getComicIndex(self) -> str:

@@ -14,7 +14,7 @@ if str(SRC) not in sys.path:
 from comic_parser import ComicParser
 
 
-def createSampleCbz(inputFolder: Path) -> Path:
+def create_sample_cbz(inputFolder: Path) -> Path:
     chapterFolder = inputFolder / "chapter_01_src"
     chapterFolder.mkdir(parents=True, exist_ok=True)
     imagePaths = []
@@ -36,7 +36,7 @@ def createSampleCbz(inputFolder: Path) -> Path:
     return cbzPath
 
 
-def readPdfMetadata(pdfPath: Path):
+def read_pdf_metadata(pdfPath: Path):
     try:
         import pikepdf
     except ImportError:
@@ -51,8 +51,8 @@ def readPdfMetadata(pdfPath: Path):
             "subject": str(info.get("/Subject", "")),
             "creator": str(info.get("/Creator", "")),
             "producer": str(info.get("/Producer", "")),
-            "creationdate": str(info.get("/CreationDate", "")),
-            "moddate": str(info.get("/ModDate", ""))
+            "creationDate": str(info.get("/CreationDate", "")),
+            "modDate": str(info.get("/ModDate", ""))
         }
 
 
@@ -62,16 +62,16 @@ def main():
 
     with tempfile.TemporaryDirectory() as tempFolder:
         inputFolder = Path(tempFolder)
-        createSampleCbz(inputFolder)
+        create_sample_cbz(inputFolder)
 
         parser = ComicParser()
         parser.runFromArgs(["comic-parser", str(inputFolder), comicName, author])
 
         outputPdf = inputFolder / f"{comicName} 01 - {author}.pdf"
         if not outputPdf.exists():
-            raise RuntimeError("Expected output PDF was not generated")
+            raise RuntimeError(f"Expected output PDF was not generated at {outputPdf}")
 
-        metadata = readPdfMetadata(outputPdf)
+        metadata = read_pdf_metadata(outputPdf)
         if metadata is None:
             return
 
@@ -83,8 +83,8 @@ def main():
         assert "01" in metadata["subject"]
         assert metadata["creator"] == "comic-parser"
         assert metadata["producer"] == "comic-parser"
-        assert metadata["creationdate"] != ""
-        assert metadata["moddate"] != ""
+        assert metadata["creationDate"] != ""
+        assert metadata["modDate"] != ""
 
         print("Metadata validation OK")
 
