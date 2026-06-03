@@ -9,10 +9,19 @@ description = "Python utility for build comics"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "Pablo Alvarez Lopez" }
+    { name = "Pablo Alvarez Lopez", email = "pablo@alvarezlopez.com" }
 ]
-keywords = ["comic", "pdf"]
-dependencies = ["img2pdf", "pillow"]
+
+keywords = [
+	"comic", 
+	"pdf"
+]
+
+dependencies = [
+	"img2pdf", 
+	"pillow"
+]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

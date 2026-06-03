@@ -5,7 +5,7 @@ Python utility for building comic PDFs from `.zip` and `.cbz` archives.
 ## Installation
 
 ```bash
-pip install .
+pip install comic-parser
 ```
 
 ## Usage
