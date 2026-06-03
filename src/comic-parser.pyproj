@@ -3,7 +3,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ded1b054-1b60-42d5-822d-41c09ae119c8</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
+    <ProjectHome>
+    </ProjectHome>
     <StartupFile>
     </StartupFile>
     <SearchPath>
@@ -23,16 +24,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\" />
-    <Folder Include="src\comic_parser\" />
+    <Folder Include="comic_parser\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\comic_parser\comic_parser.py" />
-    <Compile Include="src\comic_parser\__init__.py" />
-    <Compile Include="src\comic_parser\__main__.py" />
+    <Compile Include="comic_parser\comic_parser.py" />
+    <Compile Include="comic_parser\__init__.py" />
+    <Compile Include="comic_parser\__main__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="..\..\OIST\food-web-bifurcation-explorer\.venv\">
+    <Interpreter Include="..\.venv\">
       <Id>.venv</Id>
       <Version>3.10</Version>
       <Description>.venv (Python 3.10 (64-bit))</Description>
