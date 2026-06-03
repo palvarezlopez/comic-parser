@@ -159,36 +159,33 @@ class ComicParser:
         }
 
     def buildPDF(self, images, metadata):
+        currentMetadata = dict(metadata)
+        skippedMetadata = []
+
         try:
-            return img2pdf.convert(images, **metadata)
+            return img2pdf.convert(images, **currentMetadata)
         except TypeError as error:
             if "unexpected keyword argument" not in str(error):
                 raise
 
-        safeKeysOrder = [
-            "title",
-            "author",
-            "creationdate",
-            "moddate",
-            "subject",
-            "keywords",
-            "creator",
-            "producer"
-        ]
-
-        safeMetadata = {}
-        for key in safeKeysOrder:
+        for _ in range(len(currentMetadata) + 1):
             try:
-                safeMetadata[key] = metadata[key]
-                img2pdf.convert(images, **safeMetadata)
+                if len(skippedMetadata) > 0:
+                    print("Skipping unsupported metadata keys: " + ", ".join(skippedMetadata))
+                return img2pdf.convert(images, **currentMetadata)
             except TypeError as error:
                 if "unexpected keyword argument" not in str(error):
                     raise
-                safeMetadata.pop(key, None)
+                messageParts = str(error).split("'")
+                if len(messageParts) < 2:
+                    raise
+                unsupportedKey = messageParts[1]
+                if unsupportedKey not in currentMetadata:
+                    raise
+                currentMetadata.pop(unsupportedKey, None)
+                skippedMetadata.append(unsupportedKey)
 
-        if len(safeMetadata) > 0:
-            return img2pdf.convert(images, **safeMetadata)
-        return img2pdf.convert(images)
+        raise RuntimeError("Could not build PDF metadata with the current img2pdf version.")
 
     # calculate comic index
     def getComicIndex(self) -> str:
