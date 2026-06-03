@@ -2,6 +2,7 @@ import os
 import sys
 import img2pdf
 import zipfile
+import datetime
 from PIL import Image
 
 # comic parser
@@ -9,19 +10,30 @@ class ComicParser:
 
     # init method or constructor
     def __init__(self):
-        if (len(sys.argv) != 4):
+        # comic index
+        self.index = 1
+        # declare image vector
+        self.images = []
+
+    # parse args and run parser
+    def runFromArgs(self, args):
+        if (len(args) != 4):
             print ("format 'folder' 'comic name' 'author name'")
-        else:
-            # comic folder
-            folder = sys.argv[1]
-            # comic title
-            title = sys.argv[2]
-            # comic author
-            author = sys.argv[3]
-            # extract all files
-            self.extractFiles(folder)
-            # build PDFs
-            self.buildPDFs(folder, title, author)
+            return
+        # comic folder
+        folder = args[1]
+        # comic title
+        title = args[2]
+        # comic author
+        author = args[3]
+        # extract all files
+        self.extractFiles(folder)
+        # build PDFs
+        self.buildPDFs(folder, title, author)
+
+    # run parser from sys args
+    def runFromCli(self):
+        self.runFromArgs(sys.argv)
 
     # extract files
     def extractFiles(self, folder: str):
@@ -38,10 +50,11 @@ class ComicParser:
                     # declare file without extension
                     fileWithoutExtension = file.replace(extension, '')
                     # create folder
-                    os.mkdir(fileWithoutExtension)
+                    outputFolder = folder + "/" + fileWithoutExtension
+                    os.makedirs(outputFolder, exist_ok=True)
                     # extract file
                     with zipfile.ZipFile(folder + "/" + file, 'r') as zip_ref:
-                        zip_ref.extractall(folder + "/" + fileWithoutExtension)
+                        zip_ref.extractall(outputFolder)
 
     # build PDF
     def buildPDFs(self, folder: str, name: str, author: str):
@@ -55,15 +68,51 @@ class ComicParser:
             self.listImagesRecursive(comicFolder)
             # sort images
             self.images.sort()
+            # calculate comic index
+            comicIndex = self.getComicIndex()
             # declare pdf name
-            pdfName = name + " " + self.getComicIndex() + " - " + author + ".pdf"
+            pdfName = name + " " + comicIndex + " - " + author + ".pdf"
             # print info
             print("Parsing: " + pdfName)
+            # build metadata
+            metadata = self.buildPdfMetadata(name, author, comicIndex)
             # make pdf with images
             with open(folder + "/" + pdfName, "wb") as manga:
-                manga.write(img2pdf.convert(self.images))
+                manga.write(self.buildPdfBytes(self.images, metadata))
             # update comic index
             self.index += 1
+
+    # build metadata for PDF
+    def buildPdfMetadata(self, name: str, author: str, comicIndex: str):
+        now = datetime.datetime.now()
+        return {
+            "title": name + " " + comicIndex,
+            "author": author,
+            "subject": name + " chapter " + comicIndex,
+            "keywords": [name, author, "chapter " + comicIndex, "volume " + comicIndex],
+            "creator": "comic-parser",
+            "producer": "comic-parser",
+            "creationdate": now,
+            "moddate": now
+        }
+
+    # build PDF bytes and fallback if some metadata keys are unsupported
+    def buildPdfBytes(self, images, metadata):
+        metadataToUse = dict(metadata)
+        while True:
+            try:
+                return img2pdf.convert(images, **metadataToUse)
+            except TypeError as ex:
+                message = str(ex)
+                if ("unexpected keyword argument" in message):
+                    key = message.split("'")[1]
+                    if (key in metadataToUse):
+                        del metadataToUse[key]
+                        continue
+                if (len(metadataToUse) > 0):
+                    metadataToUse = {}
+                    continue
+                raise
 
     # calculate comic index
     def getComicIndex(self) -> str:
@@ -95,9 +144,3 @@ class ComicParser:
 
     # declare list of valid extensions
     allowedExtensions = [".png", ".jpg", ".jpeg", ".tiff", ".bmp"]
-
-    # comic index
-    index = 1
-
-    # declare image vector
-    images = []
