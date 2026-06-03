@@ -27,6 +27,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pikepdf"
+]
+
 [project.urls]
 "Bug Tracker" = "https://github.com/palvarezlopez/comic-parser/issues"
 Documentation = "https://github.com/palvarezlopez/comic-parser"
