@@ -1,9 +1,18 @@
+# vs solution folder
 .vs
+
+# enviroment folder
 .venv
-build
+
+# dist
 dist
+
+# egg info
 *.egg-info
+
+# py cache
 __pycache__/
 
+# other
 *.pyc
 *.pdf
