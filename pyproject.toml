@@ -7,7 +7,7 @@ name = "comic-parser"
 version = "1.0"
 description = "Python utility for build comics"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
     { name = "Pablo Alvarez Lopez", email = "pablo@alvarezlopez.com" }
 ]
@@ -18,8 +18,8 @@ keywords = [
 ]
 
 dependencies = [
-	"img2pdf", 
-	"pillow"
+	"img2pdf",
+	"typing_extensions"
 ]
 
 classifiers = [
@@ -29,7 +29,8 @@ classifiers = [
 
 [project.optional-dependencies]
 test = [
-    "pikepdf"
+    "pikepdf",
+    "pillow"
 ]
 
 [project.urls]
@@ -38,7 +39,7 @@ Documentation = "https://github.com/palvarezlopez/comic-parser"
 "Source Code" = "https://github.com/palvarezlopez/comic-parser"
 
 [project.scripts]
-comic-parser = "comic_parser:runParser"
+comic-parser = "comic_parser:run_parser"
 
 [tool.setuptools.packages.find]
 where = ["src"]

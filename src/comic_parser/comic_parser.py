@@ -3,6 +3,8 @@ comic_parser.py is a script that defines the ComicParser class, which is respons
 """
 import os
 import sys
+import re
+import argparse
 from typing_extensions import Buffer
 import zipfile
 from datetime import datetime
@@ -28,7 +30,7 @@ class ComicParser:
         if argv is None:
             argv = sys.argv[1:]
         # parse arguments
-        args: dict[str, str] | None = self.parse_arguments(argv)
+        args = self.parse_arguments(argv)
         if args is None:
             return
         # extract all files
@@ -38,27 +40,51 @@ class ComicParser:
             args["folder"],
             args["title"],
             args["author"],
+            args["subject"],
+            args["keywords"],
+            args["publisher"],
+            args["series"],
         )
 
-    def parse_arguments(self, argv: list[str]) -> dict[str, str] | None:
+    def build_argument_parser(self) -> argparse.ArgumentParser:
+        """
+        Builds and returns the argument parser for the comic parser command.
+        """
+        parser = argparse.ArgumentParser(
+            prog="comic-parser",
+            description="Build comic PDFs from .zip and .cbz files."
+        )
+        parser.add_argument("folder")
+        parser.add_argument("title")
+        parser.add_argument("author")
+        parser.add_argument("--subject", default=None)
+        parser.add_argument("--keywords", default=None)
+        parser.add_argument("--publisher", default=None)
+        parser.add_argument("--series", default=None)
+        return parser
+
+    def parse_arguments(self, argv: list[str]) -> dict[str, str | None] | None:
         """
         Parses the command line arguments and returns a dictionary of the parsed values. 
         If the arguments are invalid or if help is requested, it prints the usage instructions and returns None.
         """
         # show help
-        if (len(argv) == 0) or ("-h" in argv) or ("--help" in argv):
+        if len(argv) == 0:
             self.print_usage()
             return None
-        # ensure all required arguments are provided
-        if len(argv) < 3:
-            print("format 'folder' 'comic name' 'author name'")
-            self.print_usage()
+        parser = self.build_argument_parser()
+        try:
+            parsed_args = parser.parse_args(argv)
+        except SystemExit:
             return None
-        # parse arguments
-        args: dict[str, str] = {
-            "folder": argv[0],
-            "title": argv[1],
-            "author": argv[2],
+        args: dict[str, str | None] = {
+            "folder": parsed_args.folder,
+            "title": parsed_args.title,
+            "author": parsed_args.author,
+            "subject": parsed_args.subject,
+            "keywords": parsed_args.keywords,
+            "publisher": parsed_args.publisher,
+            "series": parsed_args.series,
         }
         return args
 
@@ -66,32 +92,36 @@ class ComicParser:
         """
         Prints the usage instructions for the comic parser.
         """
-        print("Usage:")
-        print("comic-parser <folder> \"<comic name>\" \"<author>\"")
+        self.build_argument_parser().print_help()
 
     def extract_files(self, folder: str):
         """
         Extracts all comic files (with allowed extensions) from the specified folder and its subdirectories, and organizes them into folders based on their names.
         """
-        files: list[str] = []
-        # get all  files
-        for (_dirpath, _directories, filenames) in os.walk(folder):
-            files.extend(filenames)
         # declare list of allowed extensions
-        file_extensions = [".zip", ".cbz"]
+        file_extensions = {".zip", ".cbz"}
         # extract files
-        for file_extension in file_extensions:
-            for file in files:
-                if file_extension in file:
-                    # declare file without extension
-                    file_without_extension = file.replace(file_extension, '')
-                    # create folder
-                    os.mkdir(file_without_extension)
-                    # extract file
-                    with zipfile.ZipFile(folder + "/" + file, 'r') as zip_ref:
-                        zip_ref.extractall(folder + "/" + file_without_extension)
+        for dirpath, _directories, filenames in os.walk(folder):
+            for file in filenames:
+                file_without_extension, file_extension = os.path.splitext(file)
+                if file_extension.lower() not in file_extensions:
+                    continue
+                source_path = os.path.join(dirpath, file)
+                destination_path = os.path.join(dirpath, file_without_extension)
+                os.makedirs(destination_path, exist_ok=True)
+                with zipfile.ZipFile(source_path, "r") as zip_ref:
+                    zip_ref.extractall(destination_path)
 
-    def build_pdfs(self, folder: str, name: str, author: str):
+    def build_pdfs(
+        self,
+        folder: str,
+        name: str,
+        author: str,
+        subject: str | None = None,
+        keywords: str | None = None,
+        publisher: str | None = None,
+        series: str | None = None,
+    ):
         """
         Builds PDFs for each comic folder found in the specified directory.
         """
@@ -112,41 +142,92 @@ class ComicParser:
             # print info
             print("Parsing: " + pdf_name)
             # make pdf with images
-            with open(folder + "/" + pdf_name, "wb") as manga:
-                manga.write(self.build_pdf(self.image_paths, self.get_pdf_metadata(name, author, comic_index)))
+            with open(os.path.join(folder, pdf_name), "wb") as manga:
+                manga.write(
+                    self.build_pdf(
+                        self.image_paths,
+                        self.get_pdf_metadata(
+                            name,
+                            author,
+                            comic_index,
+                            subject,
+                            keywords,
+                            publisher,
+                            series,
+                        ),
+                    )
+                )
             # update comic index
             self.index += 1
 
-    def get_pdf_metadata(self, name: str, author: str, index: str) -> dict[str, Any]:
+    def get_pdf_metadata(
+        self,
+        name: str,
+        author: str,
+        index: str,
+        subject: str | None = None,
+        keywords: str | None = None,
+        publisher: str | None = None,
+        series: str | None = None,
+    ) -> dict[str, Any]:
         """
         Returns the metadata for the PDF, including title, author, and creation date.
         """
+        chapter_subject = f"Chapter/Volume {index}"
+        subject_parts = [chapter_subject]
+        if subject:
+            subject_parts.append(subject)
+        if publisher:
+            subject_parts.append(publisher)
+        if series:
+            subject_parts.append(series)
+
+        chapter_keyword = f"chapter-{index}"
+        keyword_parts = [chapter_keyword]
+        if keywords:
+            keyword_parts.append(keywords)
+        if publisher:
+            keyword_parts.append(publisher)
+        if series:
+            keyword_parts.append(series)
+
+        now = datetime.now()
         return {
             "title": name + " " + index,
             "author": author,
-            "creationdate": datetime.now(),
+            "subject": ", ".join(subject_parts),
+            "keywords": keyword_parts,
+            "creator": "comic-parser",
+            "producer": "comic-parser",
+            "creationdate": now,
+            "moddate": now,
         }
 
     def build_pdf(self, images: list[str] , metadata: dict[str, Any]) -> Buffer:
         """
         Builds a PDF from the given images and metadata, while ensuring compatibility with different versions of img2pdf.
         """
-        try:
-            return img2pdf.convert(images, **metadata)
-        except TypeError as error:
-            if "unexpected keyword argument" not in str(error):
-                raise
-        # throw exception if we couldn't build the PDF with any of the metadata keys
-        raise RuntimeError("Could not build PDF metadata with the current img2pdf version.")
+        current_metadata = metadata.copy()
+        while True:
+            try:
+                return img2pdf.convert(images, **current_metadata)
+            except TypeError as error:
+                message = str(error)
+                if "unexpected keyword argument" not in message:
+                    raise
+                unexpected = re.search(r"unexpected keyword argument '([^']+)'", message)
+                if unexpected is None:
+                    raise RuntimeError("Could not parse unsupported metadata key from img2pdf.")
+                unsupported_key = unexpected.group(1)
+                if unsupported_key not in current_metadata:
+                    raise RuntimeError("Could not build PDF metadata with the current img2pdf version.")
+                current_metadata.pop(unsupported_key)
 
     def get_comic_index(self) -> str:
         """
         Returns the comic index as a string, with leading zeros if necessary.
         """
-        # if index is less than 10, add leading zero (we asume that we don't have a comic with more than 99 chapters / volumes)
-        if self.index < 10:
-            return "0" + str(self.index)
-        return str(self.index)
+        return f"{self.index:02d}"
 
     def list_folders(self, root_folder: str) -> list[str]:
         """

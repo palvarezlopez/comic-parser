@@ -1,5 +1,4 @@
 
-import os
 import shutil
 import sys
 import tempfile
@@ -66,24 +65,19 @@ def main():
         working_folder = Path(temp_folder)
         build_sample_cbz(working_folder)
 
-        original_folder = os.getcwd()
-        os.chdir(str(working_folder))
-        try:
-            ComicParser([
-                str(working_folder),
-                "Demo Comic",
-                "Demo Author",
-                "--subject",
-                "Metadata example",
-                "--keywords",
-                "demo,comic",
-                "--publisher",
-                "Demo Publisher",
-                "--series",
-                "Demo Series",
-            ])
-        finally:
-            os.chdir(original_folder)
+        ComicParser([
+            str(working_folder),
+            "Demo Comic",
+            "Demo Author",
+            "--subject",
+            "Metadata example",
+            "--keywords",
+            "demo,comic",
+            "--publisher",
+            "Demo Publisher",
+            "--series",
+            "Demo Series",
+        ])
 
         output_pdf = working_folder / "Demo Comic 01 - Demo Author.pdf"
         if not output_pdf.exists():
