@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comic-parser"
-version = "1.0"
+version = "1.1"
 description = "Python utility for build comics"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -38,7 +38,7 @@ Documentation = "https://github.com/palvarezlopez/comic-parser"
 "Source Code" = "https://github.com/palvarezlopez/comic-parser"
 
 [project.scripts]
-comic-parser = "comic_parser:runParser"
+comic-parser = "comic_parser:run_parser"
 
 [tool.setuptools.packages.find]
 where = ["src"]
