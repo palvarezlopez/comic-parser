@@ -11,12 +11,9 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from comic_parser.comic_parser import ComicParser
+import pikepdf
 
-try:
-    import pikepdf
-except ImportError:
-    pikepdf = None
+from comic_parser.comic_parser import ComicParser
 
 
 def build_sample_cbz(output_folder: Path):
@@ -39,10 +36,6 @@ def build_sample_cbz(output_folder: Path):
 
 
 def read_metadata(pdf_path: Path):
-    if pikepdf is None:
-        print("Install pikepdf to inspect embedded metadata in this example.")
-        return
-
     with pikepdf.open(str(pdf_path)) as pdf:
         info = pdf.docinfo
         print("Embedded metadata:")
