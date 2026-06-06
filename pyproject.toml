@@ -13,13 +13,14 @@ authors = [
 ]
 
 keywords = [
-	"comic", 
-	"pdf"
+    "comic", 
+    "pdf"
 ]
 
 dependencies = [
-	"img2pdf", 
-	"pillow"
+    "img2pdf", 
+    "pillow",
+    "typing_extensions"
 ]
 
 classifiers = [
