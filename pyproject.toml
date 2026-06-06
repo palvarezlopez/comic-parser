@@ -32,6 +32,10 @@ classifiers = [
 test = [
     "pikepdf"
 ]
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]"
+]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/palvarezlopez/comic-parser/issues"
@@ -43,3 +47,9 @@ comic-parser = "comic_parser:run_parser"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "mkdocs-material>=9.7.6",
+    "mkdocstrings[python]>=0.26.1",
+]

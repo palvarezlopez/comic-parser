@@ -1,0 +1,36 @@
+site_name: comic-parser
+site_description: Python utility for building comic PDFs from .zip and .cbz archives
+repo_url: https://github.com/palvarezlopez/comic-parser
+repo_name: palvarezlopez/comic-parser
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search:
+      lang: en
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - API Reference: reference.md
