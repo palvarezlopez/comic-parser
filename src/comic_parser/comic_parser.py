@@ -54,13 +54,13 @@ class ComicParser:
             prog="comic-parser",
             description="Build comic PDFs from .zip and .cbz files."
         )
-        parser.add_argument("folder")
-        parser.add_argument("title")
-        parser.add_argument("author")
-        parser.add_argument("--subject", default=None)
-        parser.add_argument("--keywords", default=None)
-        parser.add_argument("--publisher", default=None)
-        parser.add_argument("--series", default=None)
+        parser.add_argument("folder", help="Folder containing .zip/.cbz comic archives.")
+        parser.add_argument("title", help="Comic title used in generated PDF names and metadata.")
+        parser.add_argument("author", help="Comic author used in generated PDF names and metadata.")
+        parser.add_argument("--subject", default=None, help="Additional subject text to embed in PDF metadata.")
+        parser.add_argument("--keywords", default=None, help="Additional comma-separated keywords for PDF metadata.")
+        parser.add_argument("--publisher", default=None, help="Publisher name to include in PDF metadata.")
+        parser.add_argument("--series", default=None, help="Series name to include in PDF metadata.")
         return parser
 
     def parse_arguments(self, argv: list[str]) -> dict[str, str | None] | None:
@@ -98,7 +98,7 @@ class ComicParser:
         """
         Extracts all comic files (with allowed extensions) from the specified folder and its subdirectories, and organizes them into folders based on their names.
         """
-        # declare list of allowed extensions
+        # declare set of allowed extensions
         file_extensions = {".zip", ".cbz"}
         # extract files
         for dirpath, _directories, filenames in os.walk(folder):
@@ -217,10 +217,14 @@ class ComicParser:
                     raise
                 unexpected = re.search(r"unexpected keyword argument '([^']+)'", message)
                 if unexpected is None:
-                    raise RuntimeError("Could not parse unsupported metadata key from img2pdf.")
+                    raise RuntimeError(
+                        f"Could not parse unsupported metadata key from img2pdf. Original error: {message}"
+                    )
                 unsupported_key = unexpected.group(1)
                 if unsupported_key not in current_metadata:
-                    raise RuntimeError("Could not build PDF metadata with the current img2pdf version.")
+                    raise RuntimeError(
+                        f"img2pdf rejected unsupported metadata key '{unsupported_key}'. Original error: {message}"
+                    )
                 current_metadata.pop(unsupported_key)
 
     def get_comic_index(self) -> str:
