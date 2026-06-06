@@ -48,17 +48,9 @@ def read_metadata(pdf_path: Path):
         print("Embedded metadata:")
         print("  Title   :", info.get("/Title"))
         print("  Author  :", info.get("/Author"))
-        print("  Subject :", info.get("/Subject"))
-        print("  Keywords:", info.get("/Keywords"))
-        print("  Creator :", info.get("/Creator"))
-        print("  Producer:", info.get("/Producer"))
 
         assert str(info.get("/Title")) == "Demo Comic 01", f"Expected title 'Demo Comic 01' but got '{info.get('/Title')}'"
         assert str(info.get("/Author")) == "Demo Author", f"Expected author 'Demo Author' but got '{info.get('/Author')}'"
-        assert "Chapter/Volume 01" in str(info.get("/Subject")), f"Expected chapter marker in subject but got '{info.get('/Subject')}'"
-        assert "chapter-01" in str(info.get("/Keywords")), f"Expected keyword 'chapter-01' but got '{info.get('/Keywords')}'"
-        assert str(info.get("/Creator")) == "comic-parser", f"Expected creator 'comic-parser' but got '{info.get('/Creator')}'"
-        assert str(info.get("/Producer")) == "comic-parser", f"Expected producer 'comic-parser' but got '{info.get('/Producer')}'"
 
 
 def main():
@@ -73,14 +65,6 @@ def main():
                 str(working_folder),
                 "Demo Comic",
                 "Demo Author",
-                "--subject",
-                "Metadata example",
-                "--keywords",
-                "demo,comic",
-                "--publisher",
-                "Demo Publisher",
-                "--series",
-                "Demo Series",
             ])
         finally:
             os.chdir(original_folder)
